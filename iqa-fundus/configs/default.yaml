@@ -1,0 +1,34 @@
+# Cấu hình trung tâm — mọi tham số ở 1 chỗ, không hard-code trong code.
+seed: 42
+
+data:
+  root: ./data/eyeq            # thư mục chứa ảnh (KHÔNG commit)
+  labels_csv: ./data/eyeq/labels.csv   # cột tối thiểu: image, quality, patient_id
+  classes: [Good, Usable, Reject]      # đặt binary=true để gộp Good+Usable vs Reject
+  binary: false
+  image_size: 224
+  group_col: patient_id        # khóa chia tập chống rò rỉ
+  n_splits: 5                  # GroupKFold
+  val_fold: 0
+
+train:
+  model: efficientnet_b0       # timm backbone; baseline: resnet18
+  epochs: 20
+  batch_size: 32
+  lr: 0.0003
+  weight_decay: 0.0001
+  num_workers: 2
+  class_weighted_loss: true    # xử lý mất cân bằng nhãn
+  early_stopping_patience: 5
+
+eval:
+  n_bootstrap: 2000            # bootstrap 95% CI
+  ci: 0.95
+
+wandb:
+  project: iqa-fundus-et4248
+  enabled: true
+
+paths:
+  out_dir: ./outputs
+  ckpt_dir: ./checkpoints      # nên trỏ sang Drive khi chạy Colab
